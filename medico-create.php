@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="password" name="senha" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary">Salvar</button>
+                                <button type="submit" name="create_medicos" class="btn btn-primary">Salvar</button>
                             </div>
                         </form>
                         <?php if (isset($_SESSION['message'])): ?>
