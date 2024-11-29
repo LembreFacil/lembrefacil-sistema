@@ -72,7 +72,7 @@ class ApiClient {
         $data = [
             'delete_medicos' => $id
         ];
-        return $this->sendRequest('POST', '/api.php', $data);
+        return $this->sendRequest('POST', '/delete_medicos', $data);
     }
 }
 
