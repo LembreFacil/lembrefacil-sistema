@@ -11,9 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $data_nascimento = $_POST['data_nascimento'];
     $senha = $_POST['senha'];
-
-    // Criar uma instância da classe ApiClient
-    $apiClient = new ApiClient();
     
     // Chamar a função da API para criar o médico
     $response = $apiClient->createMedico($nome, $email, $data_nascimento, $senha);

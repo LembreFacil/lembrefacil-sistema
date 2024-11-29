@@ -66,6 +66,13 @@ class ApiClient {
         return $this->sendRequest('POST', '/api.php', $data);
     }
 
+    public function buscarMedicoPorId($id) {
+        $endpoint = $this->baseUrl . 'medicos/' . $id;
+        $response = file_get_contents($endpoint);
+        return json_decode($response, true);
+    }
+    
+
     // Deletar médico
     public function deletarMedico($id) {
         $data = [
