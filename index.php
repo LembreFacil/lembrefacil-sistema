@@ -1,7 +1,5 @@
 <?php
 session_start();
-require_once 'services/ApiClient.php'; // Inclui a classe ApiClient para interagir com a API
-
 // Exemplo de uso da classe ApiClient
 $apiClient = new ApiClient();
 
