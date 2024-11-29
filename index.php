@@ -5,15 +5,15 @@ require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o cami
 
 $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
 
-// // Recuperar lista de médicos
-// $response = $apiClient->listarMedicos();
-// $medicos = [];
-// if ($response['success']) {
-//     $medicos = $response['data'];
-// } else {
-//     $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . $response['message'];
-// }
-// ?>
+// Recuperar lista de médicos
+$response = $apiClient->listarMedicos();
+$medicos = [];
+if ($response['success']) {
+    $medicos = $response['data'];
+} else {
+    $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . $response['message'];
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -61,7 +61,7 @@ $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
                                             <a href="medico-edit.php?id=<?= urlencode($medico['id']) ?>" class="btn btn-success btn-sm">
                                                 <span class="bi-pencil-fill"></span>&nbsp;Editar
                                             </a>
-                                            <form action="https://web-production-2a8d.up.railway.app/delete_medicos" method="POST" class="d-inline">
+                                            <form action="deleteMedico" method="POST" class="d-inline">
                                                 <input type="hidden" name="action" value="delete_medicos">
                                                 <input type="hidden" name="medicos_id" value="<?= htmlspecialchars($medico['id']) ?>">
 
