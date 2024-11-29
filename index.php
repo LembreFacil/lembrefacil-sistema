@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once 'services/ApiClient.php'; // Inclui a classe ApiClient para interagir com a API
-$apiClient = new ApiClient("https://web-production-2a8d.up.railway.app/");
 
 // Exemplo de uso da classe ApiClient
 $apiClient = new ApiClient();
