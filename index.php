@@ -14,7 +14,21 @@ if ($response['success']) {
     $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . $response['message'];
 }
 
-$response = $apiClient->deletarMedico();
+// Verifica se há uma ação de exclusão
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_medicos' && isset($_POST['medicos_id'])) {
+    $medicos_id = $_POST['medicos_id'];
+    $response = $apiClient->deletarMedico($medicos_id);  // Passa o ID para deletarMedico
+    if ($response['success']) {
+        $_SESSION['mensagem'] = 'Médico excluído com sucesso';
+    } else {
+        $_SESSION['mensagem'] = 'Erro ao excluir médico: ' . $response['message'];
+    }
+
+    // Redirecionar de volta para a página de médicos após a exclusão
+    header('Location: index.php');
+    exit;
+}
+
 ?>
 <!doctype html>
 <html lang="en">
