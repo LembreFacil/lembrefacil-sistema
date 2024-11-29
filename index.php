@@ -1,5 +1,5 @@
 <?php
-session_start();
+session_start(); // Inicia a sessão
 
 require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o caminho está correto
 
@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     header('Location: index.php');
     exit;
 }
-
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <body>
 <?php include('navbar.php'); ?>
 <div class="container mt-4">
-    <?php include('mensagem.php'); ?>
+    <?php include('mensagem.php'); ?> <!-- Mensagem de sessão aqui -->
     <div class="row">
         <div class="col-md-12">
             <div class="card">
