@@ -1,7 +1,7 @@
 <?php
 session_start();
-// Exemplo de uso da classe ApiClient
-$apiClient = new ApiClient();
+$apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
+
 
 ?>
 <!doctype html>
