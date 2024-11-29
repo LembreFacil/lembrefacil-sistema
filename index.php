@@ -5,15 +5,15 @@ require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o cami
 
 $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
 
-// Recuperar lista de médicos
-$response = $apiClient->listarMedicos();
-$medicos = [];
-if ($response['success']) {
-    $medicos = $response['data'];
-} else {
-    $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . $response['message'];
-}
-?>
+// // Recuperar lista de médicos
+// $response = $apiClient->listarMedicos();
+// $medicos = [];
+// if ($response['success']) {
+//     $medicos = $response['data'];
+// } else {
+//     $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . $response['message'];
+// }
+// ?>
 <!doctype html>
 <html lang="en">
 <head>
