@@ -5,9 +5,6 @@ require_once 'services/ApiClient.php'; // Inclui a classe ApiClient para interag
 // Exemplo de uso da classe ApiClient
 $apiClient = new ApiClient();
 
-// Agora você pode chamar métodos da ApiClient para acessar os dados
-$medicos = $apiClient->getMedicos(); // Supondo que a classe tenha esse método
-
 ?>
 <!doctype html>
 <html lang="en">
