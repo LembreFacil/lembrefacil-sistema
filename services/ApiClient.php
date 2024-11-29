@@ -44,7 +44,7 @@ class ApiClient {
     // Criar médico
     public function createMedico($nome, $email, $dataNascimento, $senha = null) {
         $data = [
-            'create_medicos' => true,
+            'create_medicos' => 'true',
             'nome' => $nome,
             'email' => $email,
             'data_nascimento' => $dataNascimento,
