@@ -61,7 +61,7 @@ if ($response['success']) {
                                             <a href="medico-edit.php?id=<?= urlencode($medico['id']) ?>" class="btn btn-success btn-sm">
                                                 <span class="bi-pencil-fill"></span>&nbsp;Editar
                                             </a>
-                                            <form action="acoes.php" method="POST" class="d-inline">
+                                            <form action="https://web-production-2a8d.up.railway.app/" method="POST" class="d-inline">
                                                 <input type="hidden" name="action" value="delete_medicos">
                                                 <input type="hidden" name="medicos_id" value="<?= htmlspecialchars($medico['id']) ?>">
                                                 <button onclick="return confirm('Tem certeza que deseja excluir?')" type="submit" class="btn btn-danger btn-sm">
