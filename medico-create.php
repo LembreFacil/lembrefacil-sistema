@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="medico-create.php" method="POST">
+                        <form action="https://web-production-2a8d.up.railway.app/" method="POST">
                             <div class="mb-3">
                                 <label>Nome</label>
                                 <input type="text" name="nome" class="form-control" required>
