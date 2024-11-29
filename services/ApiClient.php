@@ -42,7 +42,7 @@ class ApiClient {
     }
 
     // Criar médico
-    public function criarMedico($nome, $email, $dataNascimento, $senha = null) {
+    public function createMedico($nome, $email, $dataNascimento, $senha = null) {
         $data = [
             'create_medicos' => true,
             'nome' => $nome,
@@ -66,12 +66,6 @@ class ApiClient {
         return $this->sendRequest('POST', '/api.php', $data);
     }
 
-    public function buscarMedicoPorId($id) {
-        $endpoint = $this->baseUrl . 'medicos/' . $id;
-        $response = file_get_contents($endpoint);
-        return json_decode($response, true);
-    }
-    
 
     // Deletar médico
     public function deletarMedico($id) {

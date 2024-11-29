@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/services/ApiClient.php'; // Caminho para a classe ApiClient
+require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o caminho está correto
 
 // Criar instância do ApiClient
 $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
@@ -26,45 +26,27 @@ $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
                         </h4>
                     </div>
                     <div class="card-body">
-                        <?php
-                        if (isset($_GET['id'])) {
-                            $medicos_id = $_GET['id'];
-                            
-                            // Chamar a API para obter os dados do médico
-                            $medico = $apiClient->buscarMedicoPorId($medicos_id);
-
-                            if (!empty($medico)) {
-                                ?>
-                                <form action="acoes.php" method="POST">
-                                    <input type="hidden" name="medicos_id" value="<?= htmlspecialchars($medico['id']) ?>">
-                                    <div class="mb-3">
-                                        <label>Nome</label>
-                                        <input type="text" name="nome" value="<?= htmlspecialchars($medico['nome']) ?>" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Email</label>
-                                        <input type="email" name="email" value="<?= htmlspecialchars($medico['email']) ?>" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Data de Nascimento</label>
-                                        <input type="date" name="data_nascimento" value="<?= htmlspecialchars($medico['data_nascimento']) ?>" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Senha</label>
-                                        <input type="password" name="senha" class="form-control">
-                                    </div>
-                                    <div class="mb-3">
-                                        <button type="submit" name="update_medicos" class="btn btn-primary">Salvar</button>
-                                    </div>
-                                </form>
-                                <?php
-                            } else {
-                                echo "<h5>Médico não encontrado</h5>";
-                            }
-                        } else {
-                            echo "<h5>ID do médico não fornecido</h5>";
-                        }
-                        ?>
+                        <form action="acoes.php" method="POST">
+                            <div class="mb-3">
+                                <label>Nome</label>
+                                <input type="text" name="nome" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Data de Nascimento</label>
+                                <input type="date" name="data_nascimento" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Senha</label>
+                                <input type="password" name="senha" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" name="update_medicos" class="btn btn-primary">Salvar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
