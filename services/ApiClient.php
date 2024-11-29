@@ -69,11 +69,20 @@ class ApiClient {
 
     // Deletar médico
     public function deletarMedico($id) {
+        // Verifique se o ID é válido
+        if (empty($id)) {
+            return ['success' => false, 'message' => 'ID do médico não fornecido'];
+        }
+    
+        // Defina os dados para a requisição
         $data = [
-            'delete_medicos' => $id
+            'medicos_id' => $id // Passando o ID do médico
         ];
+    
+        // Realiza a requisição
         return $this->sendRequest('POST', '/delete_medicos', $data);
     }
+    
 }
 
 // Exemplo de uso
