@@ -1,6 +1,9 @@
 <?php
 session_start();
-require_once 'services/ApiClient.php'; // Incluir o arquivo de API
+
+require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o caminho está correto
+
+$apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obter os dados do formulário
