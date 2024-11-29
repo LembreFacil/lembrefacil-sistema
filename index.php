@@ -64,7 +64,12 @@ if ($response['success']) {
                                             <form action="https://web-production-2a8d.up.railway.app/delete_medicos" method="POST" class="d-inline">
                                                 <input type="hidden" name="action" value="delete_medicos">
                                                 <input type="hidden" name="medicos_id" value="<?= htmlspecialchars($medico['id']) ?>">
-                                                <button onclick="return confirm('Tem certeza que deseja excluir?')" type="submit" class="btn btn-danger btn-sm">
+
+                                                <!-- Confirmação antes de enviar -->
+                                                <button onclick="return confirm('Tem certeza que deseja excluir?')" 
+                                                        type="submit" 
+                                                        class="btn btn-danger btn-sm"
+                                                        id="delete-btn">
                                                     <span class="bi-trash3-fill"></span>&nbsp;Excluir
                                                 </button>
                                             </form>
