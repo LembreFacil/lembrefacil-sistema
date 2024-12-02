@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if ($medico): ?>
         <h2>Editar Médico: <?= htmlspecialchars($medico['nome']) ?></h2>
-        <form action="medico-edit.php" method="POST">
+        <form action="medico-edit.php?id=<?= $medico_id ?>" method="POST">
             <div class="mb-3">
                 <label>Nome</label>
                 <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($medico['nome'] ?? '') ?>" required>
