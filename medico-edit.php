@@ -1,11 +1,51 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o caminho está correto
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
+    // Obter os dados do formulário
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $data_nascimento = $_POST['data_nascimento'];
+    $senha = $_POST['senha'];
 
-// Criar instância do ApiClient
-$apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
+    // Configurar a URL da API
+    $apiUrl = 'https://web-production-2a8d.up.railway.app/';
+
+    // Configurar cURL para atualizar um médico
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        'action' => 'update_medicos', // Adiciona a ação esperada pela API
+        'nome' => $nome,
+        'email' => $email,
+        'data_nascimento' => $data_nascimento,
+        'senha' => $senha,
+    ]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        // Erro na chamada da API
+        $_SESSION['message'] = 'Erro ao comunicar-se com a API: ' . curl_error($ch);
+    } else {
+        $responseDecoded = json_decode($response, true);
+        if ($responseDecoded['success']) {
+            // Sucesso na atualização do médico
+            $_SESSION['message'] = 'Médico atualizado com sucesso!';
+            header('Location: index.php');
+            exit;
+        } else {
+            // Erro retornado pela API
+            $_SESSION['message'] = 'Erro ao atualizar o médico: ' . $responseDecoded['message'];
+        }
+    }
+
+    curl_close($ch);
+}
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -26,7 +66,7 @@ $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="acoes.php" method="POST">
+                        <form action="medico-edit.php" method="POST">
                             <div class="mb-3">
                                 <label>Nome</label>
                                 <input type="text" name="nome" class="form-control" required>
@@ -47,6 +87,12 @@ $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
                                 <button type="submit" name="update_medicos" class="btn btn-primary">Salvar</button>
                             </div>
                         </form>
+                        <?php if (isset($_SESSION['message'])): ?>
+                            <div class="alert alert-info mt-3">
+                                <?= $_SESSION['message']; ?>
+                                <?php unset($_SESSION['message']); ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
