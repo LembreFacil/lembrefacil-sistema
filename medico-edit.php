@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Dados a serem enviados para a API de atualização
     $data = [
-        'action' => 'update_medico',  // Ação especificada para a API
+        'action' => 'update_medicos',  // Ação especificada para a API
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
