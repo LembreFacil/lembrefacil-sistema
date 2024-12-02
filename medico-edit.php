@@ -41,13 +41,14 @@ if ($medico_id) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obter os dados do formulário
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $data_nascimento = $_POST['data_nascimento'];
-    $senha = $_POST['senha'];
+    $nome = $_POST['nome'] ?? ''; // Usar '??' para evitar "undefined index"
+    $email = $_POST['email'] ?? ''; 
+    $data_nascimento = $_POST['data_nascimento'] ?? ''; 
+    $senha = $_POST['senha'] ?? ''; 
 
     // Dados a serem enviados para a API de atualização
     $data = [
+        'action' => 'update_medico',  // Ação especificada para a API
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
@@ -85,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <?php if ($medico): ?>
-        <h2>Editar Médico: <?= htmlspecialchars($medico['nome']) ?></h2>
+        <h2>Editar Médico: <?= htmlspecialchars($medico['nome'] ?? ''); ?></h2>
         <form action="medico-edit.php?id=<?= $medico_id ?>" method="POST">
             <div class="mb-3">
                 <label>Nome</label>
