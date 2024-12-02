@@ -2,35 +2,9 @@
 session_start();
 
 // URL da API
-$apiUrl = 'https://web-production-2a8d.up.railway.app';
+$apiUrl = 'https://web-production-2a8d.up.railway.app/';
 
-// Função para fazer a requisição à API
-function apiRequest($url, $method = 'GET', $data = []) {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json'
-    ]);
-
-    if ($method === 'POST' || $method === 'PUT') {
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    }
-
-    $response = curl_exec($ch);
-
-    if (curl_errno($ch)) {
-        $_SESSION['message'] = 'Erro ao comunicar-se com a API: ' . curl_error($ch);
-        curl_close($ch);
-        return null;
-    }
-
-    curl_close($ch);
-    return json_decode($response, true);
-}
-
-// Obter o ID do médico da URL
+// Verificar se o ID do médico foi fornecido
 $medico_id = $_GET['id'] ?? null;
 $medico = null;
 
@@ -52,19 +26,14 @@ if ($response && isset($response['success']) && $response['success']) {
     exit;
 }
 
-// Debug: Verificar os dados do médico recuperados
-// var_dump($medico);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
-    // Verificar se todos os campos necessários estão presentes
+    // Obter os dados do formulário
     $nome = $_POST['nome'] ?? '';
     $email = $_POST['email'] ?? '';
     $data_nascimento = $_POST['data_nascimento'] ?? '';
     $senha = $_POST['senha'] ?? '';
 
-    // Debug: Verificar os dados do formulário
-    // var_dump($nome, $email, $data_nascimento, $senha);
-
+    // Validar os dados
     if (empty($nome) || empty($email) || empty($data_nascimento)) {
         $_SESSION['message'] = 'Por favor, preencha todos os campos obrigatórios.';
         header('Location: ' . $_SERVER['PHP_SELF'] . "?id={$medico_id}");
@@ -77,21 +46,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
-        'senha' => $senha
+        'senha' => $senha,
     ];
 
-    // Enviar os dados para a API
-    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
+    // Configurar cURL para editar o médico
+    $ch = curl_init($apiUrl . "/medicos/{$medico_id}");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); // Usar PUT para edição
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
-    // Debug: Verificar a resposta da API
-    // var_dump($response);
+    $response = curl_exec($ch);
+    curl_close($ch);
 
+    // Verificar se a requisição foi bem-sucedida
+    $response = json_decode($response, true);
     if ($response && isset($response['success']) && $response['success']) {
         $_SESSION['message'] = 'Médico atualizado com sucesso!';
         header('Location: index.php');
         exit;
     } else {
         $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
+        header('Location: ' . $_SERVER['PHP_SELF'] . "?id={$medico_id}");
+        exit;
     }
 }
 ?>
@@ -123,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                         <?php endif; ?>
 
                         <?php if ($medico): ?>
-                            <form action="" method="POST">
+                            <form action="medico-edit.php" method="POST">
                                 <div class="mb-3">
                                     <label>Nome</label>
                                     <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($medico['nome'] ?? '') ?>" required>
@@ -141,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                                     <input type="password" name="senha" class="form-control">
                                 </div>
                                 <div class="mb-3">
-                                    <button type="submit" name="update_medicos" class="btn btn-primary">Salvar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar</button>
                                 </div>
                             </form>
                         <?php else: ?>
