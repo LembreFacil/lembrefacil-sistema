@@ -6,7 +6,7 @@ if (isset($_GET['id'])) {
     $medicos_id = $_GET['id'];
 
     // Configurar a URL da API para obter os dados do médico
-    $apiUrl = 'https://web-production-2a8d.up.railway.app/medicos/' . $medicos_id;
+    $apiUrl = 'https://web-production-2a8d.up.railway.app/' . $medicos_id;
 
     // Inicializar o cURL
     $ch = curl_init($apiUrl);
