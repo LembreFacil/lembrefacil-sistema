@@ -52,12 +52,26 @@ if ($response && isset($response['success']) && $response['success']) {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $data_nascimento = $_POST['data_nascimento'];
-    $senha = $_POST['senha'];
+// Debug: Verificar os dados do médico recuperados
+// var_dump($medico);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
+    // Verificar se todos os campos necessários estão presentes
+    $nome = $_POST['nome'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $data_nascimento = $_POST['data_nascimento'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+
+    // Debug: Verificar os dados do formulário
+    // var_dump($nome, $email, $data_nascimento, $senha);
+
+    if (empty($nome) || empty($email) || empty($data_nascimento)) {
+        $_SESSION['message'] = 'Por favor, preencha todos os campos obrigatórios.';
+        header('Location: ' . $_SERVER['PHP_SELF'] . "?id={$medico_id}");
+        exit;
+    }
+
+    // Preparar os dados para envio
     $data = [
         'medicos_id' => $medico_id,
         'nome' => $nome,
@@ -66,7 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
         'senha' => $senha
     ];
 
+    // Enviar os dados para a API
     $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
+
+    // Debug: Verificar a resposta da API
+    // var_dump($response);
 
     if ($response && isset($response['success']) && $response['success']) {
         $_SESSION['message'] = 'Médico atualizado com sucesso!';
@@ -105,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                         <?php endif; ?>
 
                         <?php if ($medico): ?>
-                            <form action="medico-edit.php" method="POST">
+                            <form action="" method="POST">
                                 <div class="mb-3">
                                     <label>Nome</label>
                                     <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($medico['nome'] ?? '') ?>" required>
