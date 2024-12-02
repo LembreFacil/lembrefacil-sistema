@@ -1,9 +1,49 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o caminho está correto
+// Verifique se o ID do médico foi passado via GET
+if (isset($_GET['id'])) {
+    $medicos_id = $_GET['id'];
 
-$apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
+    // Configurar a URL da API para obter os dados do médico
+    $apiUrl = 'https://web-production-2a8d.up.railway.app/' . $medicos_id;
+
+    // Inicializar o cURL
+    $ch = curl_init($apiUrl);
+
+    // Definir as opções cURL
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPGET, true);
+
+    // Executar a requisição
+    $response = curl_exec($ch);
+
+    // Verificar se houve erro na requisição
+    if ($response === false) {
+        $_SESSION['message'] = 'Erro ao conectar à API: ' . curl_error($ch);
+        header('Location: index.php');
+        exit;
+    }
+
+    // Fechar a conexão cURL
+    curl_close($ch);
+
+    // Decodificar a resposta JSON da API
+    $responseData = json_decode($response, true);
+
+    // Verificar se a resposta foi bem-sucedida
+    if ($responseData['success'] && isset($responseData['data'])) {
+        $medicos = $responseData['data'];
+    } else {
+        $_SESSION['message'] = 'Médico não encontrado.';
+        header('Location: index.php');
+        exit;
+    }
+} else {
+    $_SESSION['message'] = 'ID do médico não fornecido.';
+    header('Location: index.php');
+    exit;
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -25,38 +65,28 @@ $apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
               </h4>
             </div>
             <div class="card-body">
-                <?php
-              if (isset($_GET['id'])) {
-                  $medicos_id = mysqli_real_escape_string($conexao, $_GET['id']);
-                  $sql = "SELECT * FROM medicos WHERE id='$medicos_id'";
-                  $query = mysqli_query($conexao, $sql);
-                if (mysqli_num_rows($query) > 0) {
-                  $medicos = mysqli_fetch_array($query);
-                ?>
+                <?php if (isset($medicos)): ?>
                 <div class="mb-3">
                   <label>Nome</label>
                   <p class="form-control">
-                    <?=$medicos['nome'];?>
+                    <?= htmlspecialchars($medicos['nome']); ?>
                   </p>
                 </div>
                 <div class="mb-3">
                   <label>Email</label>
                   <p class="form-control">
-                    <?=$medicos['email'];?>
+                    <?= htmlspecialchars($medicos['email']); ?>
                   </p>
                 </div>
                 <div class="mb-3">
                   <label>Data Nascimento</label>
                   <p class="form-control">
-                    <?=date('d/m/Y', strtotime($medicos['data_nascimento']));?>
+                    <?= date('d/m/Y', strtotime($medicos['data_nascimento'])); ?>
                   </p>
                 </div>
-                <?php
-                } else {
-                  echo "<h5>Usuário não encontrado</h5>";
-                }
-              }
-              ?>
+                <?php else: ?>
+                  <h5>Erro: Médico não encontrado</h5>
+                <?php endif; ?>
             </div>
           </div>
         </div>
