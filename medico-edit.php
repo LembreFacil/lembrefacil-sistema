@@ -15,8 +15,13 @@ if (!$medico_id) {
     exit;
 }
 
-// Buscar informações do médico pela API
-$response = apiRequest($apiUrl . "/medicos/{$medico_id}");
+// Buscar informações do médico pela API usando cURL
+$ch = curl_init($apiUrl . "/medicos/{$medico_id}");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+curl_close($ch);
+
+$response = json_decode($response, true);
 
 if ($response && isset($response['success']) && $response['success']) {
     $medico = $response['data'];
