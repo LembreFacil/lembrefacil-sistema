@@ -34,6 +34,7 @@ function apiRequest($url, $method = 'GET', $data = []) {
 $medico_id = $_GET['id'] ?? null;
 $medico = null;
 
+// Verificar se o ID do médico foi fornecido
 if (!$medico_id) {
     $_SESSION['message'] = 'ID do médico não fornecido.';
     header('Location: index.php');
@@ -43,8 +44,6 @@ if (!$medico_id) {
 // Buscar informações do médico pela API
 $response = apiRequest($apiUrl . "/medicos/{$medico_id}");
 
-var_dump($response);  // Verificar a resposta da API
-
 if ($response && isset($response['success']) && $response['success']) {
     $medico = $response['data'];
 } else {
@@ -53,41 +52,31 @@ if ($response && isset($response['success']) && $response['success']) {
     exit;
 }
 
-// Processar o formulário de atualização
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    var_dump($_POST);  // Verificar os dados do formulário
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $data_nascimento = $_POST['data_nascimento'];
+    $senha = $_POST['senha'];
 
-    if (isset($_POST['update_medicos'])) {
-        $nome = $_POST['nome'];
-        $email = $_POST['email'];
-        $data_nascimento = $_POST['data_nascimento'];
-        $senha = $_POST['senha'];
+    $data = [
+        'medicos_id' => $medico_id,
+        'nome' => $nome,
+        'email' => $email,
+        'data_nascimento' => $data_nascimento,
+        'senha' => $senha
+    ];
 
-        // Dados a serem enviados para a API
-        $data = [
-            'medicos_id' => $medico_id,
-            'nome' => $nome,
-            'email' => $email,
-            'data_nascimento' => $data_nascimento,
-            'senha' => $senha
-        ];
+    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
 
-        // Requisição POST para atualizar
-        $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
-
-        var_dump($response);  // Verificar a resposta após a atualização
-
-        if ($response && isset($response['success']) && $response['success']) {
-            $_SESSION['message'] = 'Médico atualizado com sucesso!';
-            header('Location: index.php');
-            exit;
-        } else {
-            $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
-        }
+    if ($response && isset($response['success']) && $response['success']) {
+        $_SESSION['message'] = 'Médico atualizado com sucesso!';
+        header('Location: index.php');
+        exit;
+    } else {
+        $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
     }
 }
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
