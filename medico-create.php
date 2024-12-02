@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        'action' => 'create_medico', // Adiciona a ação esperada pela API
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
