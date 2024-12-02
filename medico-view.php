@@ -6,7 +6,7 @@ if (isset($_GET['id'])) {
     $medicos_id = $_GET['id'];
 
     // Configurar a URL da API para obter os dados do médico
-    $apiUrl = 'https://web-production-2a8d.up.railway.app/' . $medicos_id;
+    $apiUrl = 'https://web-production-2a8d.up.railway.app/medicos/' . $medicos_id;
 
     // Inicializar o cURL
     $ch = curl_init($apiUrl);
@@ -69,19 +69,19 @@ if (isset($_GET['id'])) {
                 <div class="mb-3">
                   <label>Nome</label>
                   <p class="form-control">
-                    <?= htmlspecialchars($medicos['nome']); ?>
+                    <?= htmlspecialchars($medicos['nome'] ?? 'N/A'); ?>
                   </p>
                 </div>
                 <div class="mb-3">
                   <label>Email</label>
                   <p class="form-control">
-                    <?= htmlspecialchars($medicos['email']); ?>
+                    <?= htmlspecialchars($medicos['email'] ?? 'N/A'); ?>
                   </p>
                 </div>
                 <div class="mb-3">
                   <label>Data Nascimento</label>
                   <p class="form-control">
-                    <?= date('d/m/Y', strtotime($medicos['data_nascimento'])); ?>
+                    <?= isset($medicos['data_nascimento']) ? date('d/m/Y', strtotime($medicos['data_nascimento'])) : 'N/A'; ?>
                   </p>
                 </div>
                 <?php else: ?>
