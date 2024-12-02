@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                         <?php endif; ?>
 
                         <?php if ($medico): ?>
-                            <form action="" method="POST">
+                            <form action="medico-edit.php" method="POST">
                                 <div class="mb-3">
                                     <label>Nome</label>
                                     <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($medico['nome'] ?? '') ?>" required>
