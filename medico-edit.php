@@ -20,7 +20,6 @@ function apiRequest($url, $method = 'GET', $data = []) {
 
     $response = curl_exec($ch);
 
-    // Tratar erros na comunicação com a API
     if (curl_errno($ch)) {
         $_SESSION['message'] = 'Erro ao comunicar-se com a API: ' . curl_error($ch);
         curl_close($ch);
@@ -49,13 +48,11 @@ if ($medico_id) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
-    // Obter os dados do formulário
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $data_nascimento = $_POST['data_nascimento'];
     $senha = $_POST['senha'];
 
-    // Dados para atualização do médico
     $data = [
         'nome' => $nome,
         'email' => $email,
@@ -63,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
         'senha' => $senha
     ];
 
-    // Enviar dados para a API para atualizar o médico
     $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'PUT', $data);
 
     if ($response && isset($response['success']) && $response['success']) {
@@ -106,15 +102,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                             <form action="" method="POST">
                                 <div class="mb-3">
                                     <label>Nome</label>
-                                    <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($medico['nome']) ?>" required>
+                                    <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($medico['nome'] ?? '') ?>" required>
                                 </div>
                                 <div class="mb-3">
                                     <label>Email</label>
-                                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($medico['email']) ?>" required>
+                                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($medico['email'] ?? '') ?>" required>
                                 </div>
                                 <div class="mb-3">
                                     <label>Data de Nascimento</label>
-                                    <input type="date" name="data_nascimento" class="form-control" value="<?= htmlspecialchars($medico['data_nascimento']) ?>" required>
+                                    <input type="date" name="data_nascimento" class="form-control" value="<?= htmlspecialchars($medico['data_nascimento'] ?? '') ?>" required>
                                 </div>
                                 <div class="mb-3">
                                     <label>Senha</label>
