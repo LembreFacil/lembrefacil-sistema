@@ -2,18 +2,18 @@
 session_start();
 
 // URL da API
-$apiUrl = 'https://web-production-2a8d.up.railway.app/';
+$apiUrl = 'https://web-production-2a8d.up.railway.app';
 
-// Função para fazer a requisição à API
+// Função para fazer requisição à API
 function apiRequest($url, $method = 'GET', $data = []) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json'
+        'Content-Type: application/json',
     ]);
 
-    if ($method == 'POST' || $method == 'PUT') {
+    if (in_array($method, ['POST', 'PUT'])) {
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     }
@@ -35,11 +35,11 @@ $medico_id = $_GET['id'] ?? null;
 $medico = null;
 
 if ($medico_id) {
-    // Buscar informações do médico pela API
-    $response = apiRequest($apiUrl . "/medicos/{$medico_id}");
+    // Buscar informações do médico
+    $response = apiRequest("$apiUrl/medicos/{$medico_id}");
 
     if ($response && isset($response['success']) && $response['success']) {
-        $medico = $response['data'];  // Dados do médico
+        $medico = $response['data']; // Dados do médico
     } else {
         $_SESSION['message'] = 'Erro ao carregar informações do médico.';
         header('Location: index.php');
@@ -48,20 +48,21 @@ if ($medico_id) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $data_nascimento = $_POST['data_nascimento'];
-    $senha = $_POST['senha'];
+    $nome = $_POST['nome'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $data_nascimento = $_POST['data_nascimento'] ?? '';
+    $senha = $_POST['senha'] ?? '';
 
+    // Dados para enviar à API
     $data = [
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
         'senha' => $senha,
-        '_method' => 'PUT' // Indica que essa requisição é um "pseudo-PUT"
     ];
 
-    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
+    // Enviar requisição de atualização
+    $response = apiRequest("$apiUrl/medicos/{$medico_id}", 'PUT', $data);
 
     if ($response && isset($response['success']) && $response['success']) {
         $_SESSION['message'] = 'Médico atualizado com sucesso!';
@@ -71,9 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
         $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
     }
 }
-
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -100,6 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                                 <?php unset($_SESSION['message']); ?>
                             </div>
                         <?php endif; ?>
+
                         <?php if ($medico): ?>
                             <form action="" method="POST">
                                 <div class="mb-3">
