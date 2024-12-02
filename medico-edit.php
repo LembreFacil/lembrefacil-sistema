@@ -1,6 +1,53 @@
 <?php
 session_start();
 
+// URL da API
+$apiUrl = 'https://web-production-2a8d.up.railway.app/';
+
+// Função para fazer a requisição à API
+function apiRequest($url, $method = 'GET', $data = []) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json'
+    ]);
+
+    if ($method == 'POST' || $method == 'PUT') {
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    }
+
+    $response = curl_exec($ch);
+
+    // Tratar erros na comunicação com a API
+    if (curl_errno($ch)) {
+        $_SESSION['message'] = 'Erro ao comunicar-se com a API: ' . curl_error($ch);
+        curl_close($ch);
+        return null;
+    }
+
+    curl_close($ch);
+    return json_decode($response, true);
+}
+
+// Obter o ID do médico da URL
+$medico_id = $_GET['id'] ?? null;
+$medico = null;
+
+if ($medico_id) {
+    // Buscar informações do médico pela API
+    $response = apiRequest($apiUrl . "/medicos/{$medico_id}");
+
+    if ($response && isset($response['success']) && $response['success']) {
+        $medico = $response['data'];  // Dados do médico
+    } else {
+        $_SESSION['message'] = 'Erro ao carregar informações do médico.';
+        header('Location: index.php');
+        exit;
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
     // Obter os dados do formulário
     $nome = $_POST['nome'];
@@ -8,41 +55,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
     $data_nascimento = $_POST['data_nascimento'];
     $senha = $_POST['senha'];
 
-    // Configurar a URL da API
-    $apiUrl = 'https://web-production-2a8d.up.railway.app/';
-
-    // Configurar cURL para atualizar um médico
-    $ch = curl_init($apiUrl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-        'action' => 'update_medicos', // Adiciona a ação esperada pela API
+    // Dados para atualização do médico
+    $data = [
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
-        'senha' => $senha,
-    ]));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        'senha' => $senha
+    ];
 
-    $response = curl_exec($ch);
+    // Enviar dados para a API para atualizar o médico
+    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'PUT', $data);
 
-    if (curl_errno($ch)) {
-        // Erro na chamada da API
-        $_SESSION['message'] = 'Erro ao comunicar-se com a API: ' . curl_error($ch);
+    if ($response && isset($response['success']) && $response['success']) {
+        $_SESSION['message'] = 'Médico atualizado com sucesso!';
+        header('Location: index.php');
+        exit;
     } else {
-        $responseDecoded = json_decode($response, true);
-        if ($responseDecoded['success']) {
-            // Sucesso na atualização do médico
-            $_SESSION['message'] = 'Médico atualizado com sucesso!';
-            header('Location: index.php');
-            exit;
-        } else {
-            // Erro retornado pela API
-            $_SESSION['message'] = 'Erro ao atualizar o médico: ' . $responseDecoded['message'];
-        }
+        $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
     }
-
-    curl_close($ch);
 }
 ?>
 
@@ -66,31 +96,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="medico-edit.php" method="POST">
-                            <div class="mb-3">
-                                <label>Nome</label>
-                                <input type="text" name="nome" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label>Email</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label>Data de Nascimento</label>
-                                <input type="date" name="data_nascimento" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label>Senha</label>
-                                <input type="password" name="senha" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <button type="submit" name="update_medicos" class="btn btn-primary">Salvar</button>
-                            </div>
-                        </form>
                         <?php if (isset($_SESSION['message'])): ?>
                             <div class="alert alert-info mt-3">
                                 <?= $_SESSION['message']; ?>
                                 <?php unset($_SESSION['message']); ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($medico): ?>
+                            <form action="" method="POST">
+                                <div class="mb-3">
+                                    <label>Nome</label>
+                                    <input type="text" name="nome" class="form-control" value="<?= htmlspecialchars($medico['nome']) ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Email</label>
+                                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($medico['email']) ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Data de Nascimento</label>
+                                    <input type="date" name="data_nascimento" class="form-control" value="<?= htmlspecialchars($medico['data_nascimento']) ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Senha</label>
+                                    <input type="password" name="senha" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <button type="submit" name="update_medicos" class="btn btn-primary">Salvar</button>
+                                </div>
+                            </form>
+                        <?php else: ?>
+                            <div class="alert alert-warning">
+                                Médico não encontrado.
                             </div>
                         <?php endif; ?>
                     </div>
