@@ -34,43 +34,56 @@ function apiRequest($url, $method = 'GET', $data = []) {
 $medico_id = $_GET['id'] ?? null;
 $medico = null;
 
-if ($medico_id) {
-    // Buscar informações do médico pela API
-    $response = apiRequest($apiUrl . "/medicos/{$medico_id}");
-
-    if ($response && isset($response['success']) && $response['success']) {
-        $medico = $response['data'];
-    } else {
-        $_SESSION['message'] = 'Erro ao carregar informações do médico.';
-        header('Location: index.php');
-        exit;
-    }
+if (!$medico_id) {
+    $_SESSION['message'] = 'ID do médico não fornecido.';
+    header('Location: index.php');
+    exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $data_nascimento = $_POST['data_nascimento'];
-    $senha = $_POST['senha'];
+// Buscar informações do médico pela API
+$response = apiRequest($apiUrl . "/medicos/{$medico_id}");
 
-    // Dados que serão enviados para atualização
-    $data = [
-        'medicos_id' => $medico_id,
-        'nome' => $nome,
-        'email' => $email,
-        'data_nascimento' => $data_nascimento,
-        'senha' => $senha
-    ];
+var_dump($response);  // Verificar a resposta da API
 
-    // Fazer a requisição POST para atualizar o médico
-    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
+if ($response && isset($response['success']) && $response['success']) {
+    $medico = $response['data'];
+} else {
+    $_SESSION['message'] = 'Erro ao carregar informações do médico.';
+    header('Location: index.php');
+    exit;
+}
 
-    if ($response && isset($response['success']) && $response['success']) {
-        $_SESSION['message'] = 'Médico atualizado com sucesso!';
-        header('Location: index.php');
-        exit;
-    } else {
-        $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
+// Processar o formulário de atualização
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    var_dump($_POST);  // Verificar os dados do formulário
+
+    if (isset($_POST['update_medicos'])) {
+        $nome = $_POST['nome'];
+        $email = $_POST['email'];
+        $data_nascimento = $_POST['data_nascimento'];
+        $senha = $_POST['senha'];
+
+        // Dados a serem enviados para a API
+        $data = [
+            'medicos_id' => $medico_id,
+            'nome' => $nome,
+            'email' => $email,
+            'data_nascimento' => $data_nascimento,
+            'senha' => $senha
+        ];
+
+        // Requisição POST para atualizar
+        $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
+
+        var_dump($response);  // Verificar a resposta após a atualização
+
+        if ($response && isset($response['success']) && $response['success']) {
+            $_SESSION['message'] = 'Médico atualizado com sucesso!';
+            header('Location: index.php');
+            exit;
+        } else {
+            $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
+        }
     }
 }
 ?>
@@ -121,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
                                     <input type="password" name="senha" class="form-control">
                                 </div>
                                 <div class="mb-3">
-                                    <button type="submit" name="update_medicos" class="btn btn-primary">Salvar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar</button>
                                 </div>
                             </form>
                         <?php else: ?>
