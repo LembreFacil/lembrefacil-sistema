@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
     // Configurar cURL para editar o médico
     $ch = curl_init($apiUrl . "/medicos/{$medico_id}");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); // Usar PUT para edição
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, true); // Usar PUT para edição
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
