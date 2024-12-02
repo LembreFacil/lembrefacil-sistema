@@ -1,30 +1,60 @@
 <?php
 session_start(); // Inicia a sessão
 
-require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o caminho está correto
-
-$apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
+$apiUrl = 'https://web-production-2a8d.up.railway.app'; // URL base da API
 
 // Recuperar lista de médicos
-$response = $apiClient->listarMedicos();
-$medicos = [];
-if ($response['success']) {
-    $medicos = $response['data'];
+$ch = curl_init("$apiUrl"); // Configura a URL da API
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Retornar resposta em vez de exibi-la
+curl_setopt($ch, CURLOPT_HTTPGET, true); // Define o método GET
+
+$response = curl_exec($ch);
+
+if (curl_errno($ch)) {
+    $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . curl_error($ch);
+    $medicos = [];
 } else {
-    $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . $response['message'];
+    $responseDecoded = json_decode($response, true);
+    if ($responseDecoded['success']) {
+        $medicos = $responseDecoded['data'];
+    } else {
+        $_SESSION['mensagem'] = 'Erro ao carregar a lista de médicos: ' . $responseDecoded['message'];
+        $medicos = [];
+    }
 }
+
+curl_close($ch);
 
 // Verifica se há uma ação de exclusão
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_medicos' && isset($_POST['medicos_id'])) {
     $medicos_id = $_POST['medicos_id'];
-    $response = $apiClient->deletarMedico($medicos_id);  // Passa o ID para deletarMedico
-    if ($response['success']) {
-        $_SESSION['mensagem'] = 'Médico excluído com sucesso';
+
+    // Configuração de cURL para deletar médico
+    $ch = curl_init("$apiUrl");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        'action' => 'delete_medicos',
+        'medicos_id' => $medicos_id,
+    ]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        $_SESSION['mensagem'] = 'Erro ao excluir médico: ' . curl_error($ch);
     } else {
-        $_SESSION['mensagem'] = 'Erro ao excluir médico: ' . $response['message'];
+        $responseDecoded = json_decode($response, true);
+        if ($responseDecoded['success']) {
+            $_SESSION['mensagem'] = 'Médico excluído com sucesso';
+        } else {
+            $_SESSION['mensagem'] = 'Erro ao excluir médico: ' . $responseDecoded['message'];
+        }
     }
 
-    // Redirecionar de volta para a página de médicos após a exclusão
+    curl_close($ch);
+
+    // Redireciona após a exclusão
     header('Location: index.php');
     exit;
 }
@@ -84,8 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                                 <!-- Confirmação antes de enviar -->
                                                 <button onclick="return confirm('Tem certeza que deseja excluir?')" 
                                                         type="submit" 
-                                                        class="btn btn-danger btn-sm"
-                                                        id="delete-btn">
+                                                        class="btn btn-danger btn-sm">
                                                     <span class="bi-trash3-fill"></span>&nbsp;Excluir
                                                 </button>
                                             </form>
