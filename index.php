@@ -29,10 +29,15 @@ curl_close($ch);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_medicos' && isset($_POST['medicos_id'])) {
     $medicos_id = $_POST['medicos_id'];
 
-    // Configuração de cURL para deletar médico usando DELETE
-    $ch = curl_init("$apiUrl/$medicos_id");
+    // Configuração de cURL para deletar médico
+    $ch = curl_init("$apiUrl");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE'); // Define o método DELETE
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        'action' => 'delete_medicos',
+        'medicos_id' => $medicos_id,
+    ]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
     $response = curl_exec($ch);
 
