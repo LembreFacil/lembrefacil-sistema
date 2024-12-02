@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/services/ApiClient.php'; // Certifique-se de que o caminho está correto
-
-$apiClient = new ApiClient('https://web-production-2a8d.up.railway.app/');
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obter os dados do formulário
     $nome = $_POST['nome'];
@@ -12,19 +8,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_nascimento = $_POST['data_nascimento'];
     $senha = $_POST['senha'];
     
-    // Chamar a função da API para criar o médico
-    $response = $apiClient->createMedico($nome, $email, $data_nascimento, $senha);
+    // Configurar a URL da API
+    $apiUrl = 'https://web-production-2a8d.up.railway.app/';
 
-    // Verificar a resposta da API
-    if ($response['success']) {
-        // Se a criação foi bem-sucedida, redirecionar ou exibir uma mensagem
-        $_SESSION['message'] = 'Médico criado com sucesso!';
-        header('Location: index.php');
-        exit;
+    // Configurar cURL para criar um médico
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        'nome' => $nome,
+        'email' => $email,
+        'data_nascimento' => $data_nascimento,
+        'senha' => $senha,
+    ]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        // Erro na chamada da API
+        $_SESSION['message'] = 'Erro ao comunicar-se com a API: ' . curl_error($ch);
     } else {
-        // Caso haja um erro, exibir uma mensagem de erro
-        $_SESSION['message'] = 'Erro ao criar o médico: ' . $response['message'];
+        $responseDecoded = json_decode($response, true);
+        if ($responseDecoded['success']) {
+            // Sucesso na criação do médico
+            $_SESSION['message'] = 'Médico criado com sucesso!';
+            header('Location: index.php');
+            exit;
+        } else {
+            // Erro retornado pela API
+            $_SESSION['message'] = 'Erro ao criar o médico: ' . $responseDecoded['message'];
+        }
     }
+
+    curl_close($ch);
 }
 ?>
 
@@ -48,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="https://web-production-2a8d.up.railway.app/" method="POST">
+                        <form action="medico-create.php" method="POST">
                             <div class="mb-3">
                                 <label>Nome</label>
                                 <input type="text" name="nome" class="form-control" required>
