@@ -29,15 +29,10 @@ curl_close($ch);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_medicos' && isset($_POST['medicos_id'])) {
     $medicos_id = $_POST['medicos_id'];
 
-    // Configuração de cURL para deletar médico
-    $ch = curl_init("$apiUrl");
+    // Configuração de cURL para deletar médico usando DELETE
+    $ch = curl_init("$apiUrl/$medicos_id");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
-        'action' => 'delete_medicos',
-        'medicos_id' => $medicos_id,
-    ]));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE'); // Define o método DELETE
 
     $response = curl_exec($ch);
 
@@ -72,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <body>
 <?php include('navbar.php'); ?>
 <div class="container mt-4">
-    <?php include('mensagem.php'); ?> <!-- Mensagem de sessão aqui -->
+    <?php include('mensagem.php'); ?> <!-- Exibe mensagens de sessão -->
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -111,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                                 <input type="hidden" name="action" value="delete_medicos">
                                                 <input type="hidden" name="medicos_id" value="<?= htmlspecialchars($medico['id']) ?>">
 
-                                                <!-- Confirmação antes de enviar -->
                                                 <button onclick="return confirm('Tem certeza que deseja excluir?')" 
                                                         type="submit" 
                                                         class="btn btn-danger btn-sm">

@@ -4,16 +4,16 @@ session_start();
 // URL da API
 $apiUrl = 'https://web-production-2a8d.up.railway.app';
 
-// Função para fazer requisição à API
+// Função para fazer a requisição à API
 function apiRequest($url, $method = 'GET', $data = []) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
+        'Content-Type: application/json'
     ]);
 
-    if (in_array($method, ['POST', 'PUT'])) {
+    if ($method === 'POST' || $method === 'PUT') {
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     }
@@ -35,11 +35,11 @@ $medico_id = $_GET['id'] ?? null;
 $medico = null;
 
 if ($medico_id) {
-    // Buscar informações do médico
-    $response = apiRequest("$apiUrl/medicos/{$medico_id}");
+    // Buscar informações do médico pela API
+    $response = apiRequest($apiUrl . "/medicos/{$medico_id}");
 
     if ($response && isset($response['success']) && $response['success']) {
-        $medico = $response['data']; // Dados do médico
+        $medico = $response['data'];
     } else {
         $_SESSION['message'] = 'Erro ao carregar informações do médico.';
         header('Location: index.php');
@@ -48,21 +48,22 @@ if ($medico_id) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
-    $nome = $_POST['nome'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $data_nascimento = $_POST['data_nascimento'] ?? '';
-    $senha = $_POST['senha'] ?? '';
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $data_nascimento = $_POST['data_nascimento'];
+    $senha = $_POST['senha'];
 
-    // Dados para enviar à API
+    // Dados que serão enviados para atualização
     $data = [
+        'medicos_id' => $medico_id,
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
-        'senha' => $senha,
+        'senha' => $senha
     ];
 
-    // Enviar requisição de atualização
-    $response = apiRequest("$apiUrl/medicos/{$medico_id}", 'PUT', $data);
+    // Fazer a requisição POST para atualizar o médico
+    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
 
     if ($response && isset($response['success']) && $response['success']) {
         $_SESSION['message'] = 'Médico atualizado com sucesso!';
@@ -73,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
     }
 }
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
