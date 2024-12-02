@@ -57,10 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
         'nome' => $nome,
         'email' => $email,
         'data_nascimento' => $data_nascimento,
-        'senha' => $senha
+        'senha' => $senha,
+        '_method' => 'PUT' // Indica que essa requisição é um "pseudo-PUT"
     ];
 
-    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'PUT', $data);
+    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
 
     if ($response && isset($response['success']) && $response['success']) {
         $_SESSION['message'] = 'Médico atualizado com sucesso!';
@@ -70,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_medicos'])) {
         $_SESSION['message'] = 'Erro ao atualizar o médico: ' . ($response['message'] ?? 'Erro desconhecido.');
     }
 }
+
 ?>
 
 <!doctype html>
