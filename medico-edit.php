@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     // Enviar os dados para a API para atualizar o médico
-    $response = apiRequest($apiUrl . "/medicos/{$medico_id}", 'POST', $data);
+   $response = apiRequest($apiUrl . '/api' ,'POST' , $data);
 
     if ($response && isset($response['success']) && $response['success']) {
         $_SESSION['message'] = 'Médico atualizado com sucesso!';
