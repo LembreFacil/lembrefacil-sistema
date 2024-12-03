@@ -28,7 +28,7 @@ $medico = null;
 
 if ($medico_id) {
     // Obter os dados do médico da API
-    $response = apiRequest($apiUrl . ,'POST', [
+    $response = apiRequest($apiUrl . '/api' ,'POST', [
         'action' => 'update_medicos',
         'medicos_id' => $medico_id
     ]);
